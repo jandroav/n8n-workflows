@@ -217,13 +217,7 @@
     },
     "Loop Over Items": {
       "main": [
-        [
-          {
-            "node": "Wait",
-            "type": "main",
-            "index": 0
-          }
-        ],
+        [],
         [
           {
             "node": "Execute Workflow",
@@ -237,7 +231,7 @@
       "main": [
         [
           {
-            "node": "Loop Over Items",
+            "node": "Wait",
             "type": "main",
             "index": 0
           }
@@ -344,16 +338,22 @@
         ]
       ]
     },
-    "Send a message": {
-      "main": [
-        []
-      ]
-    },
     "Wait": {
       "main": [
         [
           {
-            "node": "Send a message",
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -376,7 +376,7 @@
       "name": "On clicking 'execute'",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
-        848,
+        416,
         400
       ],
       "typeVersion": 1
@@ -585,7 +585,7 @@
       "name": "Loop Over Items",
       "type": "n8n-nodes-base.splitInBatches",
       "position": [
-        2176,
+        1744,
         512
       ],
       "typeVersion": 3
@@ -604,7 +604,7 @@
       "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
-        848,
+        416,
         608
       ],
       "typeVersion": 1.2
@@ -680,7 +680,7 @@
       "name": "Execute Workflow",
       "type": "n8n-nodes-base.executeWorkflow",
       "position": [
-        2400,
+        1968,
         512
       ],
       "typeVersion": 1.2
@@ -709,7 +709,7 @@
       "name": "Globals",
       "type": "n8n-nodes-base.set",
       "position": [
-        1072,
+        640,
         512
       ],
       "typeVersion": 3.4
@@ -733,7 +733,7 @@
       "name": "List files",
       "type": "n8n-nodes-base.github",
       "position": [
-        1728,
+        1296,
         608
       ],
       "webhookId": "244ea8da-851f-4afb-980c-5e5973b6a1af",
@@ -823,7 +823,7 @@
       "name": "Get many workflows",
       "type": "n8n-nodes-base.n8n",
       "position": [
-        1296,
+        864,
         512
       ],
       "typeVersion": 1,
@@ -843,7 +843,7 @@
       "name": "Workflows",
       "type": "n8n-nodes-base.aggregate",
       "position": [
-        1520,
+        1088,
         608
       ],
       "typeVersion": 1
@@ -1061,7 +1061,7 @@
       "name": "n8n",
       "type": "n8n-nodes-base.set",
       "position": [
-        1952,
+        1520,
         400
       ],
       "typeVersion": 3.4
@@ -1103,7 +1103,7 @@
       "name": "github",
       "type": "n8n-nodes-base.set",
       "position": [
-        1952,
+        1520,
         608
       ],
       "typeVersion": 3.4
@@ -1119,7 +1119,7 @@
       "name": "Sticky Note3",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1056,
+        624,
         368
       ],
       "typeVersion": 1
@@ -1128,14 +1128,14 @@
       "parameters": {
         "content": "## Main workflow loop",
         "height": 601,
-        "width": 1831,
+        "width": 2263,
         "color": 7
       },
       "id": "734112c4-9175-4f50-a2d6-7970d2938624",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        768,
+        336,
         224
       ],
       "typeVersion": 1
@@ -1155,6 +1155,18 @@
         864
       ],
       "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2176,
+        512
+      ],
+      "id": "b4adad1d-d03d-4a7b-9444-60e4c5614f82",
+      "name": "Wait",
+      "webhookId": "b9ae8233-674f-47c2-9fda-718b0085ff44"
     },
     {
       "parameters": {
@@ -1179,30 +1191,18 @@
       "type": "n8n-nodes-base.discord",
       "typeVersion": 2,
       "position": [
-        2400,
-        320
+        2384,
+        512
       ],
-      "id": "f5288718-b971-42e7-86df-5407f7de87dd",
-      "name": "Send a message",
-      "webhookId": "6d65c551-6136-4949-be86-7676dcd40546",
+      "id": "bae89369-409d-45cf-9cfd-7e0495df704e",
+      "name": "Send a message1",
+      "webhookId": "010035cb-619e-4ee4-8a49-e01ec24e38df",
       "credentials": {
         "discordBotApi": {
           "id": "I7ISPUgIL3bwvNon",
           "name": "Discord Bot account"
         }
       }
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        2176,
-        304
-      ],
-      "id": "101b7380-c082-4971-8d5b-53171426d858",
-      "name": "Wait",
-      "webhookId": "a27762ef-7bf0-4ea7-bf6e-0c2ff3f32a92"
     }
   ],
   "origin": "n8n",
@@ -1228,6 +1228,6 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-10-19T12:56:34.596Z",
-  "versionId": "babb1a32-461c-4288-9272-d6cfd2a770ff"
+  "updatedAt": "2025-10-19T12:59:36.692Z",
+  "versionId": "458376a3-5715-4118-8075-046daa38c5b5"
 }
