@@ -1,0 +1,58 @@
+{
+  "active": false,
+  "connections": {},
+  "createdAt": "2025-10-19T07:29:26.508Z",
+  "id": "ZZQGEsVGPBS9ptvg",
+  "isArchived": true,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "object": "activity",
+        "event": "create",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.stravaTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "94a07cc2-ff20-45b8-ab98-07d1953b6ab4",
+      "name": "Strava Trigger",
+      "webhookId": "85896a34-be0d-4ab2-adda-b6193f8ddb16",
+      "credentials": {
+        "stravaOAuth2Api": {
+          "id": "CFu72Q19RAOEKi7R",
+          "name": "Strava account"
+        }
+      }
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "jandroav",
+    "name": "n8n-workflows"
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-19T07:29:26.508Z",
+      "updatedAt": "2025-10-19T07:29:26.508Z",
+      "role": "workflow:owner",
+      "workflowId": "ZZQGEsVGPBS9ptvg",
+      "projectId": "FfA4w77iv8Q7RJb9"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-19T08:22:09.159Z",
+  "versionId": "2380f629-bb16-44b3-8b77-43540e1eced2"
+}
