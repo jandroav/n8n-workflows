@@ -1,0 +1,291 @@
+{
+  "active": true,
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Combine Everything",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conver to HTML": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strava Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structure Output": {
+      "main": [
+        [
+          {
+            "node": "Conver to HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Everything": {
+      "main": [
+        [
+          {
+            "node": "Fitness Coach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Fitness Coach",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Fitness Coach",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Fitness Coach": {
+      "main": [
+        [
+          {
+            "node": "Structure Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-19T07:35:26.238Z",
+  "id": "cYdDGhKmrPotLnTP",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Strava - Coach",
+  "nodes": [
+    {
+      "parameters": {
+        "object": "activity",
+        "event": "update",
+        "options": {}
+      },
+      "id": "ca1df264-cfad-4fe6-b9d1-cee2d7cc7f3d",
+      "name": "Strava Trigger",
+      "type": "n8n-nodes-base.stravaTrigger",
+      "position": [
+        528,
+        320
+      ],
+      "webhookId": "c656f7eb-6176-48b1-a68f-7e169699cecb",
+      "typeVersion": 1,
+      "credentials": {
+        "stravaOAuth2Api": {
+          "id": "CFu72Q19RAOEKi7R",
+          "name": "Strava account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recursive function to flatten JSON into a single string\nfunction flattenJson(obj, prefix = '') {\n    let str = '';\n    for (const key in obj) {\n        if (typeof obj[key] === 'object' && obj[key] !== null) {\n            str += flattenJson(obj[key], `${prefix}${key}.`);\n        } else {\n            str += `${prefix}${key}: ${obj[key]}\\n`;\n        }\n    }\n    return str;\n}\n\n// Get input data\nconst data = $input.all();\n\n// Initialize a variable to store the final output\nlet output = '';\n\n// Process each item\ndata.forEach(item => {\n    output += flattenJson(item.json);\n    output += '\\n---\\n'; // Separator between records\n});\n\n// Return the merged string as output\nreturn [{ json: { data: output } }];\n"
+      },
+      "id": "7300c4f8-bea6-45d6-8a92-63a94761572b",
+      "name": "Combine Everything",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        864,
+        320
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input JSON from the previous node\nconst input = $json.output;\n\n// Split the input into sections based on double newlines\nconst sections = input.split('\\n\\n');\n\n// Initialize the result array\nconst result = [];\n\n// Process each section\nsections.forEach((section) => {\n    const trimmedSection = section.trim();\n\n    // Handle headings marked with ** (bold)\n    if (/^\\*\\*(.*?)\\*\\*$/.test(trimmedSection)) {\n        result.push({ type: 'heading', content: trimmedSection.replace(/\\*\\*(.*?)\\*\\*/, '<b>$1</b>') });\n    }\n    // Handle bullet lists marked with *\n    else if (trimmedSection.startsWith('*')) {\n        const listItems = trimmedSection.split('\\n').map((item) => item.trim().replace(/^\\*\\s/, ''));\n        result.push({ type: 'list', items: listItems });\n    }\n    // Handle numbered lists\n    else if (/^\\d+\\.\\s/.test(trimmedSection)) {\n        const numberedItems = trimmedSection.split('\\n').map((item) => item.trim().replace(/^\\d+\\.\\s/, ''));\n        result.push({ type: 'numbered-list', items: numberedItems });\n    }\n    // Handle paragraphs\n    else {\n        result.push({ type: 'paragraph', content: trimmedSection });\n    }\n});\n\n// Return the result array\nreturn result.map(item => ({ json: item }));\n"
+      },
+      "id": "471d08b8-de33-48bc-a370-f8304017e0ef",
+      "name": "Structure Output",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1488,
+        320
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get input data from n8n\nconst inputData = $input.all(); // Fetch all input data items\n\n// Function to convert JSON data into a single HTML string\nfunction convertToHTML(data) {\n    let html = '';\n\n    data.forEach((item) => {\n        switch (item.json.type) {\n            case 'paragraph':\n                html += `<p>${item.json.content}</p>`;\n                break;\n            case 'heading':\n                html += `<h2>${item.json.content}</h2>`;\n                break;\n            case 'list':\n                html += '<ul>';\n                item.json.items.forEach((listItem) => {\n                    html += `<li>${listItem}</li>`;\n                });\n                html += '</ul>';\n                break;\n            case 'numbered-list':\n                html += '<ol>';\n                item.json.items.forEach((listItem) => {\n                    html += `<li>${listItem}</li>`;\n                });\n                html += '</ol>';\n                break;\n            default:\n                break;\n        }\n    });\n\n    return html;\n}\n\n// Convert inputData to a single HTML string\nconst singleHTML = convertToHTML(inputData);\n\n// Return as a single item\nreturn [{ json: { html: singleHTML } }];\n"
+      },
+      "id": "bda48c25-81b5-4164-9a53-706e4e074419",
+      "name": "Conver to HTML",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1680,
+        320
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "id": "c63b0519-329b-4d3b-880b-673deded9843",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        704,
+        320
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-r1:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        528
+      ],
+      "id": "202cc95c-357f-4d18-9e05-79871d198fd3",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "w5GOIgM9WEeCeime",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1248,
+        544
+      ],
+      "id": "93911e64-600e-4ae4-b463-c6724c76d187",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1429362234018238486",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1429373300546732093",
+          "mode": "list",
+          "cachedResultName": "strava",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486/1429373300546732093"
+        },
+        "content": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        320
+      ],
+      "id": "a406657e-fc19-499e-802a-c48c6506d778",
+      "name": "Send a message",
+      "webhookId": "5032eef8-f79a-4ff6-8c06-236c5fd9ec99",
+      "credentials": {
+        "discordBotApi": {
+          "id": "I7ISPUgIL3bwvNon",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=## 🏃 Running Coach Prompt\n\n**Role:**  \nYou are a **Running Coach** specializing in analyzing Strava activity data to provide **personalized, motivational, and data-driven** coaching.  \nYour mission is to help runners improve performance, endurance, and consistency through precise feedback and actionable guidance.\n\n---\n\n### 🧠 Core Abilities\n\n#### 1. Analyze Running Data  \n- Interpret metrics such as **distance, duration, pace, cadence, stride length, heart rate, power, and elevation gain**.  \n- Identify **performance trends, strengths, and weaknesses** over time.  \n- Convert data into readable formats (e.g., use “45m 30s” instead of “2730 seconds”).  \n- Consider **time of day, weather, terrain, and surface type** (road, trail, or track).  \n\n#### 2. Provide Feedback  \n- Break down performance by evaluating **pacing consistency, heart rate zones, effort levels, and running economy**.  \n- Highlight **achievements** (e.g., new PRs, improved cadence) and **areas for improvement** (e.g., inconsistent pacing, high HR drift).  \n- Explain insights clearly and concisely, using supportive, constructive language.  \n\n#### 3. Create Improvement Plans  \n- Suggest **specific workouts** (e.g., tempo runs, intervals, long runs, recovery runs).  \n- Recommend **technique improvements** such as cadence adjustments, stride optimization, or breathing rhythm.  \n- Include **recovery and rest guidance** based on training load and fatigue indicators.  \n- Align all recommendations with the runner’s **experience level and goals** (e.g., 5K improvement, marathon training, consistency).  \n\n#### 4. Set Goals and Challenges  \n- Help define **realistic short-term and long-term goals** (e.g., improve 10K time, build weekly mileage).  \n- Suggest **weekly or monthly challenges** to sustain motivation and track progress.  \n\n#### 5. Motivational Coaching  \n- Reinforce positive progress with encouraging, athlete-focused language.  \n- Promote **discipline, balance, and enjoyment** of running.  \n- Help maintain **training consistency** while avoiding burnout or overtraining.  \n\n---\n\n### ⚙️ Data Awareness  \nYou will receive **Strava running data** in JSON or tabular format, including:  \n- Distance, time, pace, cadence, heart rate, elevation gain, and splits.  \n- Optional metadata such as weather, terrain, and time of day.  \n\n---\n\n### 📤 Output Requirements  \nEach response should be structured as:  \n1. **Summary:** Quick overview of the activity and effort.  \n2. **Analysis:** Detailed insights into pacing, HR, cadence, and trends.  \n3. **Recommendations:** Specific actions to improve performance.  \n4. **Motivation:** Short, personalized encouragement message.  \n\nUse **clear, human-readable units** (e.g., “4:35/km” or “45 min run”). Avoid raw seconds or unreadable formats.\n\n---\n\n### 🎯 Goal  \nEnable the athlete to **run smarter, faster, and more efficiently** by combining personalized data insights with actionable, motivational coaching.\n\n---\n\n**Activity Data:**  \n`{{ $json.data }}`\n",
+        "options": {}
+      },
+      "id": "220df6d9-65b0-4590-832f-5b19c92da743",
+      "name": "Fitness Coach",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1152,
+        320
+      ],
+      "typeVersion": 1.7
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "jandroav",
+    "name": "n8n-workflows"
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-19T07:35:26.238Z",
+      "updatedAt": "2025-10-19T07:35:26.238Z",
+      "role": "workflow:owner",
+      "workflowId": "cYdDGhKmrPotLnTP",
+      "projectId": "FfA4w77iv8Q7RJb9"
+    }
+  ],
+  "staticData": {
+    "node:Strava Trigger": {
+      "webhookId": 310467
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-10-19T09:06:49.757Z",
+  "versionId": "9a4419d9-02bc-421f-b209-93d412fa99dd"
+}
