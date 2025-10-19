@@ -217,7 +217,13 @@
     },
     "Loop Over Items": {
       "main": [
-        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Execute Workflow",
@@ -332,6 +338,22 @@
         [
           {
             "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
             "type": "main",
             "index": 0
           }
@@ -586,22 +608,6 @@
         608
       ],
       "typeVersion": 1.2
-    },
-    {
-      "parameters": {
-        "content": "## Backup to GitHub \nThis workflow will backup all instance workflows to GitHub and also deleted it if was deleted in n8n.\n\nThe files are saved `ID.json` for the filename.\n\n### Setup\nOpen `Globals` node and update the values below 👇\n\n- **repo.owner:** your Github username\n- **repo.name:** the name of your repository\n\n\nIf your username was `john-doe` and your repository was called `n8n-backups`:\n\n- repo.owner - john-doe\n- repo.name - n8n-backups\n\n\nThe workflow calls itself using a subworkflow, to help reduce memory usage.",
-        "height": 601,
-        "width": 371,
-        "color": 4
-      },
-      "id": "c8c0bc8a-3538-4c63-8882-3dd846830649",
-      "name": "Sticky Note1",
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        368,
-        240
-      ],
-      "typeVersion": 1
     },
     {
       "parameters": {
@@ -1130,7 +1136,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         768,
-        240
+        224
       ],
       "typeVersion": 1
     },
@@ -1149,6 +1155,54 @@
         864
       ],
       "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1429362234018238486",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1429444000762560625",
+          "mode": "list",
+          "cachedResultName": "backups",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486/1429444000762560625"
+        },
+        "content": "={{ $('n8n').item.json.name }} backed up",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        320
+      ],
+      "id": "f5288718-b971-42e7-86df-5407f7de87dd",
+      "name": "Send a message",
+      "webhookId": "6d65c551-6136-4949-be86-7676dcd40546",
+      "credentials": {
+        "discordBotApi": {
+          "id": "I7ISPUgIL3bwvNon",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2176,
+        304
+      ],
+      "id": "101b7380-c082-4971-8d5b-53171426d858",
+      "name": "Wait",
+      "webhookId": "a27762ef-7bf0-4ea7-bf6e-0c2ff3f32a92"
     }
   ],
   "origin": "n8n",
@@ -1174,6 +1228,6 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-10-19T12:50:26.990Z",
-  "versionId": "82e4f34c-91c2-49d2-b9ef-059cd7ea70ed"
+  "updatedAt": "2025-10-19T12:56:34.596Z",
+  "versionId": "babb1a32-461c-4288-9272-d6cfd2a770ff"
 }
