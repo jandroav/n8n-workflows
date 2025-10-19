@@ -1,0 +1,119 @@
+{
+  "active": true,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many comments in a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many comments in a post": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-19T11:47:37.538Z",
+  "id": "1Rv0stSNHk3bY4o0",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Post Checker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        -32
+      ],
+      "id": "a30c6cd3-86c4-467c-8a84-bf3398612d8c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "postComment",
+        "operation": "getAll",
+        "subreddit": "ClaudeCode",
+        "postId": "1oaly6c",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -32
+      ],
+      "id": "a1ed9868-b2ae-4e29-b19e-e66718f67f2e",
+      "name": "Get many comments in a post",
+      "alwaysOutputData": true,
+      "credentials": {
+        "redditOAuth2Api": {
+          "id": "Ezr6YlZ9yZyIAS5i",
+          "name": "Reddit account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        -32
+      ],
+      "id": "8488abfd-e1b4-416f-9bee-231d1702fa56",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "jandroav",
+    "name": "n8n-workflows"
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-19T11:47:37.538Z",
+      "updatedAt": "2025-10-19T11:47:37.538Z",
+      "role": "workflow:owner",
+      "workflowId": "1Rv0stSNHk3bY4o0",
+      "projectId": "FfA4w77iv8Q7RJb9"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-10-19T11:54:45.596Z",
+  "versionId": "c5e6fcbd-26fb-4cb5-931c-dffb43445966"
+}
