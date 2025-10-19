@@ -1,0 +1,241 @@
+{
+  "active": false,
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Combine Everything",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Strava",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strava Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Everything": {
+      "main": [
+        [
+          {
+            "node": "Strava Social Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Strava Social Manager",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Strava Social Manager": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-19T08:27:35.729Z",
+  "id": "6isceyiRrLP6Ymw7",
+  "isArchived": true,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Strava -Title updater copy",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Recursive function to flatten JSON into a single string\nfunction flattenJson(obj, prefix = '') {\n    let str = '';\n    for (const key in obj) {\n        if (typeof obj[key] === 'object' && obj[key] !== null) {\n            str += flattenJson(obj[key], `${prefix}${key}.`);\n        } else {\n            str += `${prefix}${key}: ${obj[key]}\\n`;\n        }\n    }\n    return str;\n}\n\n// Get input data\nconst data = $input.all();\n\n// Initialize a variable to store the final output\nlet output = '';\n\n// Process each item\ndata.forEach(item => {\n    output += flattenJson(item.json);\n    output += '\\n---\\n'; // Separator between records\n});\n\n// Return the merged string as output\nreturn [{ json: { data: output } }];\n"
+      },
+      "id": "d6297f82-2c28-4aea-91ea-7ebd081fd190",
+      "name": "Combine Everything",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        864,
+        352
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "id": "1770551d-b7e6-43ad-acbc-19e1d75e4324",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        640,
+        352
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-r1:free",
+        "options": {}
+      },
+      "id": "9d1dcb77-1972-434f-8be9-33198c94bfd7",
+      "name": "OpenRouter Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "position": [
+        1088,
+        528
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openRouterApi": {
+          "id": "w5GOIgM9WEeCeime",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "object": "activity",
+        "event": "create",
+        "options": {},
+        "path": "0fcb05f4-1882-4a1d-ae0a-18a54f37e4b6"
+      },
+      "id": "0f227159-9f16-4e93-b570-ac3f392abf3e",
+      "name": "Strava Trigger",
+      "type": "n8n-nodes-base.stravaTrigger",
+      "position": [
+        432,
+        352
+      ],
+      "webhookId": "0fcb05f4-1882-4a1d-ae0a-18a54f37e4b6",
+      "typeVersion": 1,
+      "credentials": {
+        "stravaOAuth2Api": {
+          "id": "CFu72Q19RAOEKi7R",
+          "name": "Strava account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe37d921-5f51-4809-8fa9-e93b0983a566",
+              "name": "Name",
+              "type": "string",
+              "value": "={{ $json.output.split('\\n')[0].split(': ')[1] }}"
+            },
+            {
+              "id": "528a732c-7b96-47c1-8c8e-4354258569d9",
+              "name": "Description",
+              "type": "string",
+              "value": "={{ $json.output.split('\\n')[1].split(': ')[1] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "28b285cb-3436-4edb-a5f3-446a8e00b83d",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1472,
+        352
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "activityId": "={{ $('Strava Trigger').item.json.object_id }}",
+        "updateFields": {
+          "description": "={{ $json.Description }}",
+          "name": "={{ $json.Name }}"
+        }
+      },
+      "id": "8ec0ebf8-4d30-44ec-8434-6901ea37f69b",
+      "name": "Strava",
+      "type": "n8n-nodes-base.strava",
+      "position": [
+        1680,
+        352
+      ],
+      "typeVersion": 1.1,
+      "credentials": {
+        "stravaOAuth2Api": {
+          "id": "CFu72Q19RAOEKi7R",
+          "name": "Strava account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=You are a virtual assistant passionate about running.  \nBased on the information below about my running activity, generate:  \n- A **catchy title** (max 10 words), original and adapted to the context of the run.  \n- A **motivating, detailed, and personalized description** (3 to 5 sentences) that highlights the remarkable aspects of the run (route, weather, performance, feelings, anecdotes, etc.).  \n\nUse a positive, dynamic, and inspiring tone, as if writing for a running adventure journal.  \n\n**Activity data:**  \n- Distance: [X] km  \n- Duration: [X] h [X] min  \n- Elevation gain: [X] m  \n- Average pace: [X] min/km  \n- Location/start: [City/Place]  \n- Weather: [sunny, rainy, windy, etc.]  \n- Feeling: [easy, hard, great sensations, etc.]  \n- Particularities: [new route, group run, injury, etc.]  \n\n**Expected format:**  \nTitle: [Generated title]\nDescription: [Generated description]\n---\n\nHere is the activity data:  \n{{ $json.data }}",
+        "options": {}
+      },
+      "id": "58bfd15d-06b6-4886-9daa-556c27633876",
+      "name": "Strava Social Manager",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1088,
+        352
+      ],
+      "typeVersion": 1.7
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "jandroav",
+    "name": "n8n-workflows"
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-19T08:27:35.729Z",
+      "updatedAt": "2025-10-19T08:27:35.729Z",
+      "role": "workflow:owner",
+      "workflowId": "6isceyiRrLP6Ymw7",
+      "projectId": "FfA4w77iv8Q7RJb9"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-19T09:03:26.227Z",
+  "versionId": "8a06469d-bedd-40ea-ac59-d6058bb2db3a"
+}
