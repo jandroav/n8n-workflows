@@ -1,0 +1,33 @@
+{
+  "active": false,
+  "connections": {},
+  "createdAt": "2025-10-19T08:26:12.819Z",
+  "id": "QiyIOHuUsA16jvfa",
+  "isArchived": true,
+  "meta": null,
+  "name": "My workflow 2",
+  "nodes": [],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "jandroav",
+    "name": "n8n-workflows"
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-19T08:26:12.819Z",
+      "updatedAt": "2025-10-19T08:26:12.819Z",
+      "role": "workflow:owner",
+      "workflowId": "QiyIOHuUsA16jvfa",
+      "projectId": "FfA4w77iv8Q7RJb9"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-19T09:03:36.671Z",
+  "versionId": "10b6918f-933a-4c9d-8e18-d32b36da9e70"
+}
