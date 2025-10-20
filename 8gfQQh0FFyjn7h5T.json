@@ -1,0 +1,474 @@
+{
+  "active": true,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Discord Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Discord Messages": {
+      "main": [
+        [
+          {
+            "node": "Check If Messages Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Messages Exist": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Messages": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Create Jira Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Jira Ticket": {
+      "main": [
+        [
+          {
+            "node": "Check Jira Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Discord Message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Jira Success": {
+      "main": [
+        [
+          {
+            "node": "Delete Discord Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "createdAt": "2025-10-20T06:13:15.503Z",
+  "id": "8gfQQh0FFyjn7h5T",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Discord Messages to Jira Tickets",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2512,
+        192
+      ],
+      "id": "2a7849aa-f9c3-4551-8925-ff53c0f28ef0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "guildId": {
+          "__rl": true,
+          "value": "1429362234018238486",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1429708722573279262",
+          "mode": "list",
+          "cachedResultName": "tickets",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486/1429708722573279262"
+        },
+        "limit": 50,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        -2272,
+        192
+      ],
+      "id": "fa8bf856-a758-467a-9856-57a049274ce0",
+      "name": "Get Discord Messages",
+      "webhookId": "ffa7790b-1f05-4c9b-9d67-f90ce1ccd084",
+      "credentials": {
+        "discordBotApi": {
+          "id": "I7ISPUgIL3bwvNon",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "0aa6e6e2-7e42-47c0-9a7f-22b3c0e1c6a9",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2048,
+        192
+      ],
+      "id": "efe4e2fc-1802-4333-8f27-b4b648b0c972",
+      "name": "Check If Messages Exist"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1808,
+        176
+      ],
+      "id": "0d8b4a8b-e3c2-4d15-afa6-350077b7cf38",
+      "name": "Loop Over Messages"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please analyze the following Discord message and generate BOTH a concise summary and comprehensive Jira ticket description.\n\nDISCORD MESSAGE:\n{{ $json.content }}\n\nMESSAGE AUTHOR: {{ $json.author.username }}\nMESSAGE TIMESTAMP: {{ $json.timestamp }}\n\nYou MUST return your response in this EXACT JSON format:\n\n{\n  \"summary\": \"A concise one-line summary of the request (max 100 characters)\",\n  \"description\": \"Full detailed description following the template below\"\n}\n\nFor the description field, use this EXACT template structure with JIRA WIKI MARKUP formatting:\n\nh2. Requirement / User Story (Product Owner)\n\n*As A* [role]\n*I Want* [action/feature]\n*So That* [business value/benefit]\n\nh2. Wireframe / UX (Product Owner)\n\n[Describe UI/UX considerations, or mark as [TO BE FILLED BY PRODUCT OWNER]]\n\nh3. INFO, WARNING, and ERROR Conditions\n\n[Describe user feedback scenarios]\n\nh2. Security Requirement (Product Owner)\n\n[Describe security considerations: authentication, authorization, data protection, input validation]\n\nh2. Documentation Requirements (Product Owner)\n\n[List documentation needs: user guides, API docs, README updates]\n\nh2. Acceptance Criteria (Product Owner)\n\n* [ ] [Specific measurable criterion 1]\n* [ ] [Specific measurable criterion 2]\n* [ ] [Specific measurable criterion 3]\n\nh2. Dependencies (if applicable) (Product Owner + Developer/QA)\n\n[List external dependencies, APIs, libraries, or other tickets]\n\nh2. BRANCH RULES (Developer)\n\n[TO BE FILLED BY DEVELOPER - Git branching strategy]\n\nh2. Implementation Details (Developer)\n\n[TO BE FILLED BY DEVELOPER - Technical approach and architecture]\n\nh2. Manual Test Requirements (QA)\n\n[TO BE FILLED BY QA - Manual testing scenarios]\n\nh2. Automated Test Requirements (QA)\n\n[TO BE FILLED BY QA - Unit, integration, and E2E test requirements]\n\nh2. DevOps Requirements (Developer / QA)\n\n[Describe deployment, CI/CD, infrastructure, monitoring requirements]\n\nh2. DevOps Implementation (DevOps)\n\n[TO BE FILLED BY DEVOPS - Deployment strategy and infrastructure changes]\n\nIMPORTANT FORMATTING RULES:\n- Use h2. for main headings (not ##)\n- Use h3. for subheadings (not ###)\n- Use * for bullet points (not -)\n- Use *text* for bold (not **text**)\n- Do NOT use markdown syntax\n- Return ONLY the JSON object with summary and description fields\n- Do not include any preamble, explanation, or text outside the JSON structure",
+        "options": {
+          "systemMessage": "You are an expert technical analyst and ticket writer for devops teams. Your task is to analyze user requests from Discord messages and generate both a concise summary and comprehensive Jira ticket description.\n\nIMPORTANT GUIDELINES:\n1. Extract the core requirement from the Discord message\n2. Generate a concise summary (max 100 characters) that captures the essence of the request\n3. Generate user stories in the format: As A [role], I Want [action], So That [benefit]\n4. Fill in sections based on available information\n5. Mark sections that require specific role input with placeholder text like \"[TO BE FILLED BY PRODUCT OWNER]\" or \"[TO BE FILLED BY DEVELOPER]\"\n6. Be specific and actionable in your descriptions\n7. Consider security, testing, and DevOps implications\n8. Generate realistic acceptance criteria based on the request\n9. ALWAYS return a valid JSON object with exactly two fields: \"summary\" and \"description\"\n10. Do not add any preamble, explanation, markdown code blocks, or extra text outside the JSON structure\n11. CRITICAL: Use JIRA WIKI MARKUP syntax in the description field, NOT Markdown:\n    - Headings: h2. for major sections, h3. for subsections\n    - Bold: *text* (single asterisks)\n    - Bullet lists: * item (asterisk + space)\n    - NO markdown syntax (no ##, no -, no **)"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -1568,
+        0
+      ],
+      "id": "0a579b36-e7ee-4813-acd3-bef7ff398d1a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the AI Agent JSON response\nconst agentOutput = $input.first().json.output;\nlet parsedData;\n\ntry {\n  // Try to parse as JSON directly\n  parsedData = JSON.parse(agentOutput);\n} catch (e) {\n  // If parsing fails, try to extract JSON from markdown code blocks\n  const jsonMatch = agentOutput.match(/```json\\s*([\\s\\S]*?)```/);\n  if (jsonMatch) {\n    parsedData = JSON.parse(jsonMatch[1]);\n  } else {\n    // Last resort: try to find JSON object in the text\n    const jsonObjectMatch = agentOutput.match(/\\{[\\s\\S]*\"summary\"[\\s\\S]*\"description\"[\\s\\S]*\\}/);\n    if (jsonObjectMatch) {\n      parsedData = JSON.parse(jsonObjectMatch[0]);\n    } else {\n      throw new Error('Could not parse AI Agent output as JSON');\n    }\n  }\n}\n\nreturn {\n  summary: parsedData.summary,\n  description: parsedData.description,\n  originalMessage: $('Get Discord Messages').item.json.content,\n  author: $('Get Discord Messages').item.json.author.username,\n  timestamp: $('Get Discord Messages').item.json.timestamp\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1248,
+        0
+      ],
+      "id": "190a41b5-5ad0-46bd-b92e-aee73c16cdbf",
+      "name": "Parse Agent Output"
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "11203",
+          "mode": "list",
+          "cachedResultName": "DATICAL"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "7",
+          "mode": "list",
+          "cachedResultName": "Story"
+        },
+        "summary": "={{ $json.summary }}",
+        "additionalFields": {
+          "description": "={{ $json.description }}",
+          "componentIds": [
+            "11931"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        144
+      ],
+      "id": "c0d551d7-4848-432c-984c-cd4b10a97e25",
+      "name": "Create Jira Ticket",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "cHlXrG05mBLoocuF",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "deleteMessage",
+        "guildId": {
+          "__rl": true,
+          "value": "1429362234018238486",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1429708722573279262",
+          "mode": "list",
+          "cachedResultName": "tickets",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486/1429708722573279262"
+        },
+        "messageId": "={{ $('Get Discord Messages').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        288
+      ],
+      "id": "730fbf9a-55f2-4eca-97e4-df7ab7048ac4",
+      "name": "Delete Discord Message",
+      "webhookId": "35999acb-c811-4743-83d7-d29867fc4ebf",
+      "credentials": {
+        "discordBotApi": {
+          "id": "I7ISPUgIL3bwvNon",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.error }}",
+              "operation": "isEmpty"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        144
+      ],
+      "id": "849805ad-f84e-4c2f-85f9-1461e32c2501",
+      "name": "Check Jira Success"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-5-haiku-20241022",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 3.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -1568,
+        192
+      ],
+      "id": "1c5e2572-3598-4e70-828d-d166ade31c66",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "WHAwKkMwCUyPXaxT",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1429362234018238486",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1429429487275216957",
+          "mode": "list",
+          "cachedResultName": "jira",
+          "cachedResultUrl": "https://discord.com/channels/1429362234018238486/1429429487275216957"
+        },
+        "content": "=New {{ $json.key }} DevOps ticket created: {{ $('Parse Agent Output').item.json.summary }} -> https://datical.atlassian.net/browse/{{ $json.key }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        -80
+      ],
+      "id": "a5ca9751-6fd2-4e4c-9668-fdae782b189a",
+      "name": "Send a message",
+      "webhookId": "f162c59e-1279-4e06-91e4-d1e45a76aeb7",
+      "credentials": {
+        "discordBotApi": {
+          "id": "I7ISPUgIL3bwvNon",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -544,
+        96
+      ],
+      "id": "53a45e43-39be-4293-bac8-e933d806dba1",
+      "name": "Log Success"
+    }
+  ],
+  "origin": "n8n",
+  "pinData": {},
+  "repo": {
+    "owner": "jandroav",
+    "name": "n8n-workflows"
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-20T06:13:15.503Z",
+      "updatedAt": "2025-10-20T06:13:15.503Z",
+      "role": "workflow:owner",
+      "workflowId": "8gfQQh0FFyjn7h5T",
+      "projectId": "FfA4w77iv8Q7RJb9"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-10-20T07:05:43.879Z",
+  "versionId": "05829ed2-6d6d-4ff5-b316-b97cd3668c8d"
+}
