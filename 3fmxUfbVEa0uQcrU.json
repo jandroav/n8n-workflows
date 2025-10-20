@@ -101,45 +101,18 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Daily Evening Trigger  \nSchedules and initiates the EOD workflow each workday evening automatically."
-      },
-      "id": "7f21de72-05b2-4053-b66a-5dc16120d132",
-      "name": "Sticky Note",
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -2240,
-        368
-      ],
-      "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "content": "## Get ALL issues (Jira)  \nRetrieves all Jira issues for the day, including statuses, priorities, assignees, and comment to power the Daily standup summary.",
-        "height": 176
-      },
-      "id": "fc5c03ca-6a49-4681-8031-8175e5157eef",
-      "name": "Sticky Note1",
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -1696,
-        192
-      ],
-      "typeVersion": 1
-    },
-    {
-      "parameters": {
         "operation": "getAll",
         "returnAll": true,
         "options": {
-          "jql": "updated >= -5d AND \"developer[user picker (single user)]\" = \"avazquez@liquibase.com\" ORDER BY created DESC"
+          "jql": "updated >= -1d AND \"developer[user picker (single user)]\" = \"avazquez@liquibase.com\" ORDER BY created DESC"
         }
       },
-      "id": "01629fd9-5a3a-452c-a543-7c3b31eb953a",
+      "id": "914bdc51-38dc-414d-95fc-7b7bf00083f8",
       "name": "Get ALL issues",
       "type": "n8n-nodes-base.jira",
       "position": [
         -1728,
-        400
+        384
       ],
       "typeVersion": 1,
       "credentials": {
@@ -157,12 +130,12 @@
         "returnAll": true,
         "options": {}
       },
-      "id": "4139e5d5-fb07-4d5e-837e-9ef74a1aba5e",
+      "id": "df71567c-631a-4f36-95c5-2ce06078fce5",
       "name": "Get Comments for Each Issue",
       "type": "n8n-nodes-base.jira",
       "position": [
         -1536,
-        400
+        384
       ],
       "typeVersion": 1,
       "credentials": {
@@ -174,14 +147,14 @@
     },
     {
       "parameters": {
-        "jsCode": "// Merge Jira issues with their comments\n// Input: Items from \"Get Comments for Each Issue\" node (one item per comment)\n// Output: Array of issues with comments embedded\n\nconst commentItems = $input.all();\nconst allIssues = $('Get ALL issues').all();\n\n// Group comments by issue key\n// Comments come from pairedItem which links back to the original issue\nconst commentsByIssue = {};\n\nfor (const commentItem of commentItems) {\n  // Get the issue key from the pairedItem (the original issue that triggered this comment fetch)\n  const pairedItem = commentItem.pairedItem;\n  if (!pairedItem) continue;\n  \n  // Access the original issue data\n  const sourceNode = $('Get ALL issues').item(pairedItem.item);\n  if (!sourceNode || !sourceNode.json || !sourceNode.json.key) continue;\n  \n  const issueKey = sourceNode.json.key;\n  \n  // Initialize array for this issue if needed\n  if (!commentsByIssue[issueKey]) {\n    commentsByIssue[issueKey] = [];\n  }\n  \n  // Add the comment data\n  const comment = commentItem.json;\n  if (comment && (comment.body || comment.author)) {\n    commentsByIssue[issueKey].push({\n      author: comment.author?.displayName || comment.author?.name || 'Unknown',\n      body: comment.body,\n      created: comment.created,\n      updated: comment.updated,\n      id: comment.id\n    });\n  }\n}\n\n// Create result with issues enriched with comments\nconst result = [];\n\nfor (const issueItem of allIssues) {\n  const issueKey = issueItem.json.key;\n  const issue = { ...issueItem.json };\n  \n  // Add comments to the issue\n  const comments = commentsByIssue[issueKey] || [];\n  issue.comments = comments;\n  issue.commentCount = comments.length;\n  \n  result.push({ json: issue });\n}\n\nreturn result;"
+        "jsCode": "// Merge Jira issues with their comments\n// Input: Items from \"Get Comments for Each Issue\" node (one item per comment)\n// Output: Array of issues with comments embedded\n\nconst commentItems = $input.all();\nconst allIssues = $('Get ALL issues').all();\n\n// Group comments by issue key\n// Comments come from pairedItem which links back to the original issue\nconst commentsByIssue = {};\n\nfor (const commentItem of commentItems) {\n  // Get the issue key from the pairedItem (the original issue that triggered this comment fetch)\n  const pairedItem = commentItem.pairedItem;\n  if (!pairedItem || pairedItem.item === undefined) continue;\n  \n  // Access the original issue data by index\n  const sourceIssue = allIssues[pairedItem.item];\n  if (!sourceIssue || !sourceIssue.json || !sourceIssue.json.key) continue;\n  \n  const issueKey = sourceIssue.json.key;\n  \n  // Initialize array for this issue if needed\n  if (!commentsByIssue[issueKey]) {\n    commentsByIssue[issueKey] = [];\n  }\n  \n  // Add the comment data\n  const comment = commentItem.json;\n  if (comment && (comment.body || comment.author)) {\n    commentsByIssue[issueKey].push({\n      author: comment.author?.displayName || comment.author?.name || 'Unknown',\n      body: comment.body,\n      created: comment.created,\n      updated: comment.updated,\n      id: comment.id\n    });\n  }\n}\n\n// Create result with issues enriched with comments\nconst result = [];\n\nfor (const issueItem of allIssues) {\n  const issueKey = issueItem.json.key;\n  const issue = { ...issueItem.json };\n  \n  // Add comments to the issue\n  const comments = commentsByIssue[issueKey] || [];\n  issue.comments = comments;\n  issue.commentCount = comments.length;\n  \n  result.push({ json: issue });\n}\n\nreturn result;"
       },
-      "id": "3e2910a8-eee7-4b72-aece-b1d451cedeb6",
+      "id": "ab6823c7-c3c0-419c-84d5-673b494beebb",
       "name": "Merge Issues with Comments",
       "type": "n8n-nodes-base.code",
       "position": [
         -1360,
-        400
+        384
       ],
       "typeVersion": 2
     },
@@ -189,12 +162,12 @@
       "parameters": {
         "jsCode": "// n8n Code node: merge all incoming items into a single output array in one item\n\nconst inputItems = $input.all();\nconst combined = [];\n\n// Normalize any value to an array of plain objects\nfunction normalizeToArray(val) {\n  if (typeof val === 'string') {\n    const trimmed = val.trim();\n    try {\n      const parsed = JSON.parse(trimmed);\n      return Array.isArray(parsed) ? parsed : [parsed];\n    } catch {\n      return [{ raw: trimmed }];\n    }\n  }\n  if (Array.isArray(val)) return val;\n  if (val && typeof val === 'object') return [val];\n  return [{ value: val }];\n}\n\n// Merge all items' json into one array\nfor (const item of inputItems) {\n  const source = item.json !== undefined ? item.json : item;\n  const arr = normalizeToArray(source);\n  for (const el of arr) {\n    const obj = el && typeof el === 'object' ? el : { value: el };\n    combined.push(obj);\n  }\n}\n\n// Return a single n8n item containing the whole array\nreturn [\n  {\n    json: {\n      combined,            // All input collapsed into one array\n      count: combined.length\n    }\n  }\n];\n"
       },
-      "id": "c86999ff-cca7-4a7e-a210-62dbaf299191",
+      "id": "9a3eb1d3-d0f8-466e-b461-1fa1dd75ce79",
       "name": "Flatten Input",
       "type": "n8n-nodes-base.code",
       "position": [
         -1184,
-        400
+        384
       ],
       "typeVersion": 2
     },
@@ -206,12 +179,12 @@
           "systemMessage": "You are an End‑of‑Day (EOD) Report generator for engineering teams. Your job is to read Jira issue data with comments and produce a FIRST-PERSON daily standup report that the developer can read aloud during standup meetings. Write as if YOU are the developer reporting on YOUR work. Do not ask questions. Infer context only from the input.\n\nIMPORTANT: Write the entire report in FIRST PERSON (\"I completed...\", \"I'm working on...\", \"I need to...\") as if you are the developer giving a standup update.\n\nINPUT FORMAT\n- The input may be a single object containing { combined: [...], count: N } or a raw array of issue/work items.\n- Each issue includes: key, summary, status, fields, and a comments array.\n- Comments contain: author.displayName, body, created, updated.\n- Extract insights from comment bodies about progress, blockers, decisions, questions, and collaboration.\n- Today's local time context: Asia/Kolkata (IST), unless clearly indicated otherwise.\n\nOUTPUT TEMPLATE\n1) Daily Standup Update\n- Write 2-3 paragraphs in FIRST PERSON describing:\n  - What I accomplished today (completed tickets with context)\n  - What I'm currently working on (in-progress items)\n  - Any blockers or help I need\n- Mine comment threads to provide rich context about WHY things were done, WHAT decisions were made, and WHO I collaborated with.\n- Mention key collaborators by name when comments show teamwork.\n- Be conversational and natural, as if speaking in a standup.\n\n2) Key Metrics\n- Total items I touched today:\n- Items I completed:\n- Items I'm actively working on:\n- Items in my backlog:\n- Comments/discussions I participated in:\n\n3) What I Did Today\n- 3–6 bullets in FIRST PERSON (e.g., \"I completed DAT-21057: Fixed the GitHub Actions deployment conflict. After discussing with @TeamMember in comments, I decided to use approach X because...\").\n- For EACH item, deeply analyze ALL comments to extract:\n  - Technical decisions made and rationale\n  - Problems encountered and solutions found\n  - Collaboration and discussions with team members\n  - Questions asked and answers received\n  - Approvals or feedback received\n- Synthesize comment discussions into narrative insights, not just \"had 3 comments\"\n- Quote specific technical details from comments when relevant\n\n4) Blockers & Help Needed\n- Bullets in FIRST PERSON (e.g., \"I'm blocked on DAT-12345 because...\", \"I need help from @Person to...\").\n- Scan ALL comment threads for:\n  - Explicit blocker statements (\"blocked by\", \"waiting on\", \"can't proceed\")\n  - Unanswered questions that need team input\n  - Dependencies on other team members or systems\n  - Review requests or approval needs\n  - Technical challenges where I'm stuck\n- If no blockers found, write \"No blockers - making good progress!\"\n\n5) Tomorrow's Plan\n- 4–7 bullets in FIRST PERSON (e.g., \"I'll continue working on...\", \"I plan to start...\", \"I need to follow up on...\").\n- Base this on:\n  - In-progress items that need completion\n  - Action items mentioned in comments\n  - Logical next steps from completed work\n  - Blockers that need resolution\n\n6) Technical Details (Appendix)\n- Brief data for 3–5 key tickets: ticket key, summary, status, comment highlights.\n- For tickets with rich comment discussions (commentCount > 2), include:\n  - A 1-2 sentence synthesis of the comment thread\n  - Key technical decisions or insights from comments\n  - Example: \"DAT-12345 (5 comments): Discussion with @Alice about using Redis vs Memcached; decided on Redis for persistence requirements\"\n\nCOMMENT DEEP ANALYSIS RULES (CRITICAL)\n- Read EVERY comment body carefully - this is where the real work insights are\n- For each issue, create a narrative from comments showing:\n  - The problem-solving journey (initial approach → challenges → solution)\n  - Technical discussions and decisions\n  - Collaboration patterns (who helped, who reviewed, who approved)\n  - Open questions or ongoing discussions\n- Look for these patterns in comment bodies:\n  - \"I think we should...\" → decisions made\n  - \"The issue is...\" → problems identified\n  - \"After testing...\" → progress updates\n  - \"We need to...\" → action items\n  - \"Blocked by...\" / \"Waiting for...\" → blockers\n  - \"@mention\" → collaboration\n  - Questions (?) → things needing resolution\n- Ignore comments that are just noise: \"+1\", \"LGTM\", \"thanks\", \"approved\" (unless approval is contextually important)\n- Prioritize comments from today (check created field)\n- Transform comment insights into first-person narrative\n\nVOICE & TONE\n- Sound natural and conversational, like a real standup\n- Be specific with ticket numbers and context\n- Show your thought process and decision-making\n- Acknowledge collaboration (\"I worked with @Person...\")\n- Be honest about challenges and blockers\n- Use technical terms appropriately\n\nCLASSIFICATION RULES\n- Completed = statusCategory.key: done OR resolution present\n- In Progress = status.name: In Progress OR statusCategory.key: indeterminate\n- Backlog/To Do = status.name: Backlog/To Do OR statusCategory.key: new\n- Bugs vs Tasks from issuetype.name\n\nFORMATTING RULES\n- Write in first person throughout (I, my, me)\n- Be concise but informative\n- Use bullet points for lists\n- Bold 2-4 critical items (ticket numbers, blocker keywords)\n- Keep section headings as specified\n- If a section has no content, write a natural first-person statement (e.g., \"Nothing completed today, but made progress on several items\")\n\nERROR HANDLING\n- If input is incomplete: \"My data looks incomplete today, but here's what I can report...\"\n\nCONSISTENCY CHECK\n- All six sections present\n- Entirely first-person narrative\n- Comments deeply analyzed and synthesized into insights\n- Ticket references accurate"
         }
       },
-      "id": "49f675a0-e0cb-4a98-8478-c4478f7b018c",
+      "id": "5449a6a5-1a21-47ca-ac69-e7b1579e35ad",
       "name": "Create Summary",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "position": [
         -992,
-        400
+        384
       ],
       "typeVersion": 2.2
     },
@@ -226,28 +199,14 @@
           ]
         }
       },
-      "id": "e5268b09-fead-4897-9c92-20392f073a4b",
+      "id": "6a5acede-b107-4043-b500-95fa024c94af",
       "name": "Daily Evening Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
         -1920,
-        400
+        384
       ],
       "typeVersion": 1.2
-    },
-    {
-      "parameters": {
-        "content": "## Flatten Input  \nNormalizes and flattens the Jira JSON into a lighter structure so downstream nodes can parse consistently.",
-        "height": 176
-      },
-      "id": "5b5899ee-0744-46a3-bcba-ff8d9a81a492",
-      "name": "Sticky Note2",
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -1280,
-        576
-      ],
-      "typeVersion": 1
     },
     {
       "parameters": {
@@ -263,9 +222,9 @@
       "typeVersion": 1.3,
       "position": [
         -992,
-        624
+        608
       ],
-      "id": "19afa6c1-91bd-4fd4-8b76-f4b0aae45f52",
+      "id": "68ade57a-5974-41b7-8e80-fbec46380514",
       "name": "Anthropic Chat Model",
       "credentials": {
         "anthropicApi": {
@@ -298,9 +257,9 @@
       "typeVersion": 2,
       "position": [
         -400,
-        384
+        368
       ],
-      "id": "67b11ca7-9a5e-46e8-94d6-e030192f1a56",
+      "id": "e18b4c6b-c67b-48ec-bb64-00253d2ed9b8",
       "name": "Send a message1",
       "webhookId": "8d19bf2e-ff12-409d-a4ed-4651a0e69dda",
       "credentials": {
@@ -314,12 +273,12 @@
       "parameters": {
         "jsCode": "// Chunk messages for Discord (2000 char limit)\nconst DISCORD_LIMIT = 1900; // Safe margin below 2000\n\nfunction chunkMessage(text, maxLength) {\n  if (text.length <= maxLength) {\n    return [text];\n  }\n  \n  const chunks = [];\n  let remaining = text;\n  \n  while (remaining.length > 0) {\n    if (remaining.length <= maxLength) {\n      chunks.push(remaining);\n      break;\n    }\n    \n    // Try to split at newline near the limit\n    let splitAt = maxLength;\n    const nearbyNewline = remaining.lastIndexOf('\\n', maxLength);\n    \n    if (nearbyNewline > maxLength * 0.7) {\n      splitAt = nearbyNewline + 1;\n    }\n    \n    chunks.push(remaining.substring(0, splitAt));\n    remaining = remaining.substring(splitAt);\n  }\n  \n  return chunks;\n}\n\nconst items = $input.all();\nconst result = [];\n\nfor (const item of items) {\n  const content = item.json.output || item.json.html || JSON.stringify(item.json);\n  const chunks = chunkMessage(content, DISCORD_LIMIT);\n  \n  chunks.forEach((chunk, index) => {\n    const partInfo = chunks.length > 1 ? `\\n\\n📄 Part ${index + 1}/${chunks.length}` : '';\n    result.push({\n      json: {\n        content: chunk + partInfo,\n        originalLength: content.length,\n        chunkIndex: index,\n        totalChunks: chunks.length\n      }\n    });\n  });\n}\n\nreturn result;"
       },
-      "id": "11b2c613-f422-496d-8632-c2d28e95b2ae",
+      "id": "c2f18b06-f9e8-4f7d-9723-f500dafc42b1",
       "name": "Chunk Daily Message",
       "type": "n8n-nodes-base.code",
       "position": [
         -624,
-        128
+        112
       ],
       "typeVersion": 2
     }
@@ -351,6 +310,6 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-10-20T04:50:09.363Z",
-  "versionId": "fb5bc34a-984d-45b3-ba9e-847b5dd52cf0"
+  "updatedAt": "2025-10-20T05:24:41.071Z",
+  "versionId": "e932c8cd-22b2-4c6d-893f-9d88616ab4b2"
 }
