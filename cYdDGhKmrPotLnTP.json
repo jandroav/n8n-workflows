@@ -105,9 +105,11 @@
   "nodes": [
     {
       "parameters": {
-        "object": "activity",
-        "event": "update",
-        "options": {}
+        "event": "create",
+        "resolveData": false,
+        "options": {
+          "deleteIfExist": false
+        }
       },
       "id": "ca1df264-cfad-4fe6-b9d1-cee2d7cc7f3d",
       "name": "Strava Trigger",
@@ -118,6 +120,7 @@
       ],
       "webhookId": "c656f7eb-6176-48b1-a68f-7e169699cecb",
       "typeVersion": 1,
+      "notesInFlow": true,
       "credentials": {
         "stravaOAuth2Api": {
           "id": "CFu72Q19RAOEKi7R",
@@ -286,11 +289,11 @@
   ],
   "staticData": {
     "node:Strava Trigger": {
-      "webhookId": 310596
+      "webhookId": 310709
     }
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-10-20T05:31:27.146Z",
-  "versionId": "06649f23-1197-4d23-a5df-58ec97ceb846"
+  "updatedAt": "2025-10-20T13:05:41.856Z",
+  "versionId": "15fc8550-b40e-4548-928d-7599d7bfbdfe"
 }
