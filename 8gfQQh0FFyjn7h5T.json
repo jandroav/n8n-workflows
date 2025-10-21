@@ -205,7 +205,8 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "strict",
+            "version": 1
           },
           "conditions": [
             {
@@ -469,6 +470,6 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-10-20T07:05:43.879Z",
-  "versionId": "05829ed2-6d6d-4ff5-b316-b97cd3668c8d"
+  "updatedAt": "2025-10-20T12:56:24.770Z",
+  "versionId": "4b1f2366-33a7-4ed1-a34b-030b2e5243eb"
 }
