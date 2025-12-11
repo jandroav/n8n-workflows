@@ -1,5 +1,64 @@
 {
   "active": true,
+  "activeVersion": {
+    "updatedAt": "2025-12-10T08:09:10.802Z",
+    "createdAt": "2025-12-10T08:09:10.802Z",
+    "versionId": "b1e35dd8-ee3f-4623-9fd5-00c7035d2ffe",
+    "workflowId": "FOcmYWdGzUJlKOwa",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 10
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -432,
+          -144
+        ],
+        "id": "80796955-f4e6-410c-973a-d0747d0b9d91",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "url": "https://n8n.jandroav.net/webhook/ae85dd95-d1b2-42f8-b443-d3493a163774",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -224,
+          -144
+        ],
+        "id": "78244d47-8743-4a24-bca1-21c00c3036d5",
+        "name": "HTTP Request"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "system migration",
+    "name": null,
+    "description": null
+  },
+  "activeVersionId": "b1e35dd8-ee3f-4623-9fd5-00c7035d2ffe",
   "connections": {
     "Schedule Trigger": {
       "main": [
@@ -67,8 +126,8 @@
   },
   "shared": [
     {
-      "createdAt": "2025-10-19T11:37:51.435Z",
       "updatedAt": "2025-10-19T11:37:51.435Z",
+      "createdAt": "2025-10-19T11:37:51.435Z",
       "role": "workflow:owner",
       "workflowId": "FOcmYWdGzUJlKOwa",
       "projectId": "FfA4w77iv8Q7RJb9"
@@ -81,8 +140,8 @@
   },
   "tags": [
     {
-      "createdAt": "2025-10-19T11:40:18.390Z",
       "updatedAt": "2025-10-19T11:40:18.390Z",
+      "createdAt": "2025-10-19T11:40:18.390Z",
       "id": "QIE7Jv8L2TVQ3XGd",
       "name": "render"
     }
